@@ -107,7 +107,7 @@
 	},
 	{
 		"inputs": [],
-		"name": "getPropposalsAddresses",
+		"name": "getProposalsAddresses",
 		"outputs": [
 			{
 				"internalType": "address[]",
@@ -120,7 +120,7 @@
 	},
 	{
 		"inputs": [],
-		"name": "getPropposalsNames",
+		"name": "getProposalsNames",
 		"outputs": [
 			{
 				"internalType": "string[]",
