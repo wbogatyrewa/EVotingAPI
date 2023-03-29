@@ -35,8 +35,8 @@ export const getVotingList = async () => {
     startDateTime = moment.unix(Number(await contract.getStartTime())).toDate();
     endDateTime = moment.unix(Number(await contract.getEndTime())).toDate();
     voters = await contract.getVoters();
-    proposalsAddr = await contract.getPropposalsAddresses();
-    proposalsNames = await contract.getPropposalsNames();
+    proposalsAddr = await contract.getProposalsAddresses();
+    proposalsNames = await contract.getProposalsNames();
 
     let answers = [];
     for (let i = 0; i < proposalsAddr.length; i++) {
