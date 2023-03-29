@@ -1,6 +1,6 @@
 import express, { json } from "express";
 import cors from "cors";
-import { getVoting } from "./methods/getVoting.js";
+import { getVotingList } from "./scripts/getVotingList.js";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -25,9 +25,9 @@ app.use(function (req, res, next) {
   next();
 });
 
-app.get("/get-voting", (req, res) => {
+app.get("/get-voting-list", async (req, res) => {
   try {
-    const response = getVoting(req.body);
+    const response = await getVotingList();
     res.status(200).send(response);
   } catch (err) {
     res.status(500).send(`{"Error": ${err}}`);
