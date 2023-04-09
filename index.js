@@ -4,6 +4,7 @@ import { getVotingList } from "./scripts/getVotingList.js";
 import path from "path";
 import { fileURLToPath } from "url";
 import { setAbiToFile } from "./scripts/setAbiToFile.js";
+import { getAbi } from "./scripts/getAbi.js";
 
 const __filename = fileURLToPath(import.meta.url);
 
@@ -30,6 +31,15 @@ app.use(function (req, res, next) {
 app.get("/get-voting-list", async (req, res) => {
   try {
     const response = await getVotingList();
+    res.status(200).send(response);
+  } catch (err) {
+    res.status(500).send(`{"Error": ${err}}`);
+  }
+});
+
+app.get("/get-abi/:address", jsonParser, async (req, res) => {
+  try {
+    const response = await getAbi(req.params.address);
     res.status(200).send(response);
   } catch (err) {
     res.status(500).send(`{"Error": ${err}}`);
