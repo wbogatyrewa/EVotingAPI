@@ -1,10 +1,10 @@
 import express, { json } from "express";
 import cors from "cors";
-import { getVotingList } from "./scripts/getVotingList.js";
+import { getVotingList } from "./src/getVotingList.js";
 import path from "path";
 import { fileURLToPath } from "url";
-import { setAbiToFile } from "./scripts/setAbiToFile.js";
-import { getAbi } from "./scripts/getAbi.js";
+import { setAbiToFile } from "./src/setAbiToFile.js";
+import { getAbi } from "./src/getAbi.js";
 
 const __filename = fileURLToPath(import.meta.url);
 
