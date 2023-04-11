@@ -38,6 +38,7 @@ app.get("/get-voting-list", async (req, res) => {
   }
 });
 
+// will delete
 app.get("/get-abi/:address", jsonParser, async (req, res) => {
   try {
     const response = await getAbi(req.params.address);
@@ -62,6 +63,7 @@ app.post("/create-voting", async (req, res) => {
   }
 });
 
+// will delete
 app.post("/set-abi-to-file", jsonParser, async (req, res) => {
   try {
     const response = await setAbiToFile(

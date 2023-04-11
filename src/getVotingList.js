@@ -1,28 +1,32 @@
-import * as fs from "fs";
-import { ethers } from "ethers";
+import { ethers, Contract } from "ethers";
 import moment from "moment/moment.js";
-import path from "path";
-import { fileURLToPath } from "url";
 import { API_KEY, PRIVATE_KEY } from "../env.js";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import { ABI } from "./contracts/EVotingAbi.js";
+import {
+  EVotingManagerAddress,
+  EVotingManagerABI,
+} from "./contracts/EVotingManagerAbi.js";
 
 const alchemyProvider = new ethers.AlchemyProvider("sepolia", API_KEY);
 const signer = new ethers.Wallet(PRIVATE_KEY, alchemyProvider);
 
-const folder = __dirname + "/voting_contracts";
-
 // результат функции: список голосований
-// 1) file: abi контакта голосования
-// 2) достать abi и записать его в переменную
-// 3) достать данные с помощью методов голосования
+// - получить аби контракта голосования
+// - получить список адресов голосований из смарта
+// - получить данные из каждого голосования
+// - вернуть список данных
 
 export const getVotingList = async () => {
-  const votingList = fs.readdirSync(folder).map(async (file) => {
-    let address = file.slice(0, -5);
-    let abi = JSON.parse(fs.readFileSync(folder + `/${file}`, "utf-8"));
-    let contract = new ethers.Contract(address, abi, signer);
+  const EVotingManager = await new Contract(
+    EVotingManagerAddress,
+    EVotingManagerABI,
+    signer
+  );
+
+  const votingAddresses = await EVotingManager.getEVotings();
+
+  const votingList = votingAddresses.map(async (address) => {
+    let contract = new ethers.Contract(address, ABI, signer);
 
     let name = "";
     let startDateTime = new Date();
