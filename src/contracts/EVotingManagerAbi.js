@@ -1,6 +1,11 @@
 export const EVotingManagerAddress =
-  "0x3b4c444791F4Efc6D26aC7944004eF0cc8f452BD";
+  "0xDbaf324B59DC84CE76e651eB92d42d1eb5B16EAE";
 export const EVotingManagerABI = [
+  {
+    inputs: [],
+    stateMutability: "nonpayable",
+    type: "constructor",
+  },
   {
     inputs: [
       {
@@ -22,6 +27,19 @@ export const EVotingManagerABI = [
         internalType: "address[]",
         name: "",
         type: "address[]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "owner",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
       },
     ],
     stateMutability: "view",
