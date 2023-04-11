@@ -1,113 +1,58 @@
-import path from "path";
-import { fileURLToPath } from "url";
-import { API_KEY, PRIVATE_KEY, PUBLIC_KEY, API_URL } from "../env.js";
+import { API_KEY, PRIVATE_KEY } from "../env.js";
 import { bytecode, ABI } from "./contracts/EVotingAbi.js";
-import { createAlchemyWeb3 } from "@alch/alchemy-web3";
+import {
+  EVotingManagerAddress,
+  EVotingManagerABI,
+} from "./contracts/EVotingManagerAbi.js";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import { ethers, AbiCoder, ContractFactory, Contract, Wallet } from "ethers";
 
-const folder = __dirname;
+const alchemyProvider = new ethers.AlchemyProvider("sepolia", API_KEY);
+const signer = new ethers.Wallet(PRIVATE_KEY, alchemyProvider);
 
 export const createVoting = async (
   name,
   startDateTime,
   endDateTime,
   voters,
-  proposalsAddress,
   proposalsNames
 ) => {
-  const web3 = createAlchemyWeb3(API_URL);
-  const encodedParameters = web3.eth.abi
-    .encodeParameters(
-      ["string", "uint", "uint", "address[]", "address[]", "string[]"],
-      [
-        name,
-        startDateTime,
-        endDateTime,
-        voters,
-        proposalsAddress,
-        proposalsNames,
-      ]
-    )
-    .slice(6);
+  // convert DateTime to seconds
+  const start = startDateTime.getTime() / 1000;
+  const end = endDateTime.getTime() / 1000;
 
-  const bytecodeWithEncoded = `0x${bytecode}${encodedParameters}`;
+  // generate proposals address
+  const proposalsAddress = proposalsNames.map(
+    (name) => Wallet.createRandom().address
+  );
 
-  const contract = await new web3.eth.Contract(ABI);
+  const encodedParameters = new AbiCoder().encode(
+    ["string", "uint256", "uint256", "address[]", "address[]", "string[]"],
+    [name, start, end, voters, proposalsAddress, proposalsNames]
+  );
+  const bytecodeWithEncoded = `${bytecode}${encodedParameters.slice(2)}`;
 
-  const nonce = await web3.eth.getTransactionCount(PUBLIC_KEY, "latest");
+  const EVoting = await new ContractFactory(ABI, bytecodeWithEncoded, signer);
+  // Start deployment, returning a promise that resolves to a contract object
+  const eVoting = await EVoting.deploy(
+    name,
+    start,
+    end,
+    voters,
+    proposalsAddress,
+    proposalsNames
+  );
 
-  const deploy = contract.deploy({
-    data: bytecodeWithEncoded,
-    arguments: [
-      name,
-      startDateTime,
-      endDateTime,
-      voters,
-      proposalsAddress,
-      proposalsNames,
-    ],
-  });
+  const address = eVoting.getAddress();
 
-  const address = web3.eth
-    .sendTransaction({ ...deploy, from: PUBLIC_KEY }, PRIVATE_KEY)
-    .then(function (newContractInstance) {
-      return newContractInstance.options.address; // instance with the new contract address
-    });
-  // .send({
-  //   from: PUBLIC_KEY,
-  // })
-  // .then(function (newContractInstance) {
-  //   return newContractInstance.options.address; // instance with the new contract address
-  // });
+  // add voting address to EVotingManager smart contract
+  const EVotingManager = await new Contract(
+    EVotingManagerAddress,
+    EVotingManagerABI,
+    signer
+  );
 
-  // const nonce = 15;
-  // const gasPrice = await web3.eth.getGasPrice();
-  // const gasLimit = await web3.eth.estimateGas({
-  //   bytecodeWithEncoded,
-  // });
+  const tx = await EVotingManager.addEVoting(address);
 
-  // const privateKey = Buffer.from(PRIVATE_KEY, "hex");
-
-  // const txObject = {
-  //   nonce: web3.utils.toHex(nonce),
-  //   gasLimit: web3.utils.toHex(gasLimit),
-  //   gasPrice: web3.utils.toHex(gasPrice),
-  //   data: `0x${bytecodeWithEncoded}`,
-  //   chainId: 11155111,
-  // };
-
-  // const tx = new Tx(txObject);
-  // tx.sign(privateKey);
-
-  // const serializedTx = tx.serialize();
-  // const raw = "0x" + serializedTx.toString("hex");
-
-  // const txReceipt = await web3.eth.sendSignedTransaction(raw);
-  // console.log("Contract Address:", txReceipt.contractAddress);
-
-  // const factory = new ContractFactory(
-  //   abi,
-  //   bytecode,
-  //   signer
-  // );
-
-  // // Start deployment, returning a promise that resolves to a contract object
-  // const eVoting = await factory.deploy(
-  //   name,
-  //   startDateTime,
-  //   endDateTime,
-  //   voters,
-  //   proposalsNames,
-  //   proposalsAddress
-  // );
-
-  // Store the ABI and Bytecode into a JSON file
-
-  // fs.writeFileSync(
-  //   `${folder}/voting_contracts/${txReceipt.contractAddress}.json`,
-  //   JSON.stringify(abi)
-  // );
   return address;
 };
