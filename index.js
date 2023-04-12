@@ -37,15 +37,6 @@ app.get("/get-voting-list", async (req, res) => {
   }
 });
 
-app.get("/get-abi", jsonParser, async (req, res) => {
-  try {
-    const response = await getAbi();
-    res.status(200).send(response);
-  } catch (err) {
-    res.status(500).send(`{"Error": ${err}}`);
-  }
-});
-
 app.post("/create-voting", async (req, res) => {
   try {
     const response = await createVoting(
