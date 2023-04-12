@@ -17,10 +17,6 @@ export const createVoting = async (
   voters,
   proposalsNames
 ) => {
-  // convert DateTime to seconds
-  const start = startDateTime.getTime() / 1000;
-  const end = endDateTime.getTime() / 1000;
-
   // generate proposals address
   const proposalsAddress = proposalsNames.map(
     (name) => Wallet.createRandom().address
@@ -28,7 +24,7 @@ export const createVoting = async (
 
   const encodedParameters = new AbiCoder().encode(
     ["string", "uint256", "uint256", "address[]", "address[]", "string[]"],
-    [name, start, end, voters, proposalsAddress, proposalsNames]
+    [name, startDateTime, endDateTime, voters, proposalsAddress, proposalsNames]
   );
   const bytecodeWithEncoded = `${bytecode}${encodedParameters.slice(2)}`;
 
@@ -36,8 +32,8 @@ export const createVoting = async (
   // Start deployment, returning a promise that resolves to a contract object
   const eVoting = await EVoting.deploy(
     name,
-    start,
-    end,
+    startDateTime,
+    endDateTime,
     voters,
     proposalsAddress,
     proposalsNames
