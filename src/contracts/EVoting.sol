@@ -55,7 +55,7 @@ contract EVoting {
     
             voters[_voters[i]] = false;
             votersExist[_voters[i]] = true;
-            token.mint(_voters[i], 1000000000000000000); 
+            //token.mint(_voters[i], 1e18); 
         }
     }
 
@@ -73,9 +73,10 @@ contract EVoting {
         require(votersExist[msg.sender], "Voter doesn't exist.");
         require(token.balanceOf(msg.sender) > 0, "Token doesn't exist.");
         require(proposalsExist[proposal], "Proposal doesn't exist.");
-        require(!voters[msg.sender], "Voter already voted.");
+        //require(!voters[msg.sender], "Voter already voted.");
 
-        token.transfer(proposal, 1000000000000000000);
+        //token.transfer(proposal, 1);
+        token.mint(proposal, 1e18);
         voters[msg.sender] = true;
         votesFor[msg.sender] = proposal;
     }
