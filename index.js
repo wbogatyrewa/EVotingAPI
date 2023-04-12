@@ -3,7 +3,6 @@ import cors from "cors";
 import { getVotingList } from "./src/getVotingList.js";
 import path from "path";
 import { fileURLToPath } from "url";
-import { setAbiToFile } from "./src/setAbiToFile.js";
 import { getAbi } from "./src/getAbi.js";
 import { createVoting } from "./src/createVoting.js";
 
@@ -38,10 +37,9 @@ app.get("/get-voting-list", async (req, res) => {
   }
 });
 
-// will delete
-app.get("/get-abi/:address", jsonParser, async (req, res) => {
+app.get("/get-abi", jsonParser, async (req, res) => {
   try {
-    const response = await getAbi(req.params.address);
+    const response = await getAbi();
     res.status(200).send(response);
   } catch (err) {
     res.status(500).send(`{"Error": ${err}}`);
@@ -56,19 +54,6 @@ app.post("/create-voting", async (req, res) => {
       req.body.endDateTime,
       req.body.voters,
       req.body.proposalsNames
-    );
-    res.status(200).send(response);
-  } catch (err) {
-    res.status(500).send(`{"Error": ${err}}`);
-  }
-});
-
-// will delete
-app.post("/set-abi-to-file", jsonParser, async (req, res) => {
-  try {
-    const response = await setAbiToFile(
-      req.body.address,
-      JSON.parse(req.body.abi)
     );
     res.status(200).send(response);
   } catch (err) {
