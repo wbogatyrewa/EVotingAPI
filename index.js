@@ -3,7 +3,6 @@ import cors from "cors";
 import { getVotingList } from "./src/getVotingList.js";
 import path from "path";
 import { fileURLToPath } from "url";
-import { getAbi } from "./src/getAbi.js";
 import { createVoting } from "./src/createVoting.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -37,7 +36,7 @@ app.get("/get-voting-list", async (req, res) => {
   }
 });
 
-app.post("/create-voting", async (req, res) => {
+app.post("/create-voting", jsonParser, async (req, res) => {
   try {
     const response = await createVoting(
       req.body.name,
