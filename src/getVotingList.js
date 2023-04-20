@@ -47,8 +47,10 @@ export const getVotingList = async () => {
       answers.push({
         label: proposalsNames[i],
         result:
-          Number(await contract.totalVotesFor(proposalsAddr[i])) /
-          Math.pow(10, 21),
+          moment() > endDateTime
+            ? Number(await contract.totalVotesFor(proposalsAddr[i])) /
+              Math.pow(10, 21)
+            : null,
         address: proposalsAddr[i],
       });
     }
