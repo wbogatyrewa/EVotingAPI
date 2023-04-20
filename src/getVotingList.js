@@ -46,6 +46,9 @@ export const getVotingList = async () => {
     for (let i = 0; i < proposalsAddr.length; i++) {
       answers.push({
         label: proposalsNames[i],
+        result:
+          Number(await contract.totalVotesFor(proposalsAddr[i])) /
+          Math.pow(10, 21),
         address: proposalsAddr[i],
       });
     }
