@@ -79,6 +79,10 @@ contract EVoting {
         votesFor[msg.sender] = proposal;
     }
 
+    function isVoted(address voter) view public returns (bool) {
+        return voters[voter];
+    }
+
     function totalVotesFor(address proposal) view public returns (uint256) {
         return token.balanceOf(proposal);
     }
@@ -88,7 +92,7 @@ contract EVoting {
         return votesFor[voter];
     }
 
-        function getName() view public returns(string memory) {
+    function getName() view public returns(string memory) {
         return name;
     }
 
