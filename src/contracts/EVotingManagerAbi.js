@@ -1,5 +1,5 @@
 export const EVotingManagerAddress =
-  "0xDbaf324B59DC84CE76e651eB92d42d1eb5B16EAE";
+  "0x702D64F58fC5849fF1fE95CdA136ACb99Ac1979C";
 export const EVotingManagerABI = [
   {
     inputs: [],
